@@ -1,0 +1,17 @@
+.jr-static-site-generator__container {
+  background: #fff;
+  padding: 1.5rem;
+}
+
+.jr-static-site-generator__help {
+  margin-bottom: 1rem;
+}
+
+.jr-static-site-generator .jr-static-site-generator__status {
+  padding: 1.5rem;
+}
+
+.jr-static-site-generator__message {
+  white-space: pre;
+  overflow-x: auto;
+}
