@@ -57,7 +57,7 @@ $fileList = $staticSiteGenerator->generate($outputFolder = './static', $baseUrl 
 
 ### 2) By triggering an endpoint
 
-To use this, adapt config option `static_site_generator.endpoint` to your needs (should be a string)
+To use this, adapt config option `jr.static_site_generator.endpoint` to your needs (should be a string)
 
 ### 3) By using a `static-site-generator` field
 
@@ -74,17 +74,19 @@ fields:
 
 ```php
 return [
-  'static_site_generator' => [
-    'endpoint' => null, # set to any string like 'generate-static-site' to use the built-in endpoint (necessary when using the blueprint field)
-    'output_folder' => './static', # you can specify an absolute or relative path
-    'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
-    'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
-    'skip_media' => false, # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
-    'skip_templates' => [], # ignore pages with given templates (home is always rendered)
-    'custom_routes' => [], # see below for more information on custom routes
-    'custom_filters' => [], # see below for more information on custom filters
-    'ignore_untranslated_pages' => false, # set to true to ignore pages without an own language
-    'index_file_name' => 'index.html' # you can change the directory index file name, e.g. to 'index.json' when generating an API
+  'jr' => [
+    'static_site_generator' => [
+      'endpoint' => null, # set to any string like 'generate-static-site' to use the built-in endpoint (necessary when using the blueprint field)
+      'output_folder' => './static', # you can specify an absolute or relative path
+      'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
+      'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
+      'skip_media' => false, # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
+      'skip_templates' => [], # ignore pages with given templates (home is always rendered)
+      'custom_routes' => [], # see below for more information on custom routes
+      'custom_filters' => [], # see below for more information on custom filters
+      'ignore_untranslated_pages' => false, # set to true to ignore pages without an own language
+      'index_file_name' => 'index.html' # you can change the directory index file name, e.g. to 'index.json' when generating an API
+    ]
   ]
 ];
 ```
@@ -161,7 +163,7 @@ $staticSiteGenerator->setCustomRoutes($customRoutes);
 #### 2) Via configuration, when using the endpoint or `static-site-generator` field
 
 ```php
-'static_site_generator.custom_routes' => $customRoutes
+'jr.static_site_generator.custom_routes' => $customRoutes
 ```
 
 ## Custom filters
@@ -170,7 +172,7 @@ When using the endpoint or `static-site-generator` field, this plugin will by de
 You can filter the pages to be rendered by providing an array of custom filters in config option `custom_filters`.
 
 ```php
-'static_site_generator.custom_filters' => $customFilters
+'jr.static_site_generator.custom_filters' => $customFilters
 ```
 
 Each element of this array must be an array of arguments accepted by [`$pages->filterBy()` method](https://getkirby.com/docs/cookbook/content/filtering).

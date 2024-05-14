@@ -20,15 +20,15 @@ Kirby::plugin('jr/static-site-generator', [
         [
           'pattern' => $endpoint,
           'action' => function () use ($kirby) {
-            $outputFolder = $kirby->option('static_site_generator.output_folder', './static');
-            $baseUrl = $kirby->option('static_site_generator.base_url', '/');
-            $preserve = $kirby->option('static_site_generator.preserve', []);
-            $skipMedia = $kirby->option('static_site_generator.skip_media', false);
-            $skipTemplates = array_diff($kirby->option('static_site_generator.skip_templates', []), ['home']);
-            $customRoutes = $kirby->option('static_site_generator.custom_routes', []);
-            $customFilters = $kirby->option('static_site_generator.custom_filters', []);
-            $ignoreUntranslatedPages = $kirby->option('static_site_generator.ignore_untranslated_pages', false);
-            $indexFileName = $kirby->option('static_site_generator.index_file_name', 'index.html');
+            $outputFolder = $kirby->option('jr.static_site_generator.output_folder', './static');
+            $baseUrl = $kirby->option('jr.static_site_generator.base_url', '/');
+            $preserve = $kirby->option('jr.static_site_generator.preserve', []);
+            $skipMedia = $kirby->option('jr.static_site_generator.skip_media', false);
+            $skipTemplates = array_diff($kirby->option('jr.static_site_generator.skip_templates', []), ['home']);
+            $customRoutes = $kirby->option('jr.static_site_generator.custom_routes', []);
+            $customFilters = $kirby->option('jr.static_site_generator.custom_filters', []);
+            $ignoreUntranslatedPages = $kirby->option('jr.static_site_generator.ignore_untranslated_pages', false);
+            $indexFileName = $kirby->option('jr.static_site_generator.index_file_name', 'index.html');
             if (!empty($skipTemplates)) {
               array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
             }
@@ -56,7 +56,7 @@ Kirby::plugin('jr/static-site-generator', [
     'staticSiteGenerator' => [
       'props' => [
         'endpoint' => function () {
-          return $this->kirby()->option('static_site_generator.endpoint');
+          return $this->kirby()->option('jr.static_site_generator.endpoint');
         }
       ]
     ]
