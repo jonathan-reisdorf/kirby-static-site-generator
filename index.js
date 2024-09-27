@@ -64,9 +64,29 @@ panel.plugin("jr/static-site-generator", {
           }
 
           this.isBusy = true;
-          const response = await this.$api.post(`${endpoint}`);
-          this.isBusy = false;
-          this.response = response;
+
+          const originalFetch = window.fetch;
+          let errorResponse;
+          window.fetch = async (...args) => {
+            const response = await originalFetch(...args);
+            response.status >= 400 && (errorResponse = await response.clone());
+            return response;
+          };
+
+          try {
+            const response = await this.$api.post(`${endpoint}`);
+            this.response = response;
+          } catch {
+            errorResponse = (await errorResponse?.text())
+              ?.split("FATAL_ERROR:")
+              .pop();
+            this.response = errorResponse
+              ? JSON.parse(errorResponse)
+              : { success: false };
+          } finally {
+            window.fetch = originalFetch;
+            this.isBusy = false;
+          }
         },
       },
     },

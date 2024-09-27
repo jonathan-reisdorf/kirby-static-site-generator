@@ -200,9 +200,5 @@ Be careful when specifying the output folder, as the given path (except files st
 
 Feedback and contributions are welcome!
 
-For commit messages we're following the [gitmoji](https://gitmoji.dev/) guide :smiley:
-Below you can find an example commit message for fixing a bug:
-:bug: fix copying of individual files
-
 Please post all bug reports in our issue tracker.
 We have prepared a template which will make it easier to describe the bug.
