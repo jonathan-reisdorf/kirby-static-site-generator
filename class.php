@@ -11,6 +11,7 @@ use Kirby\Cms\Site;
 use Kirby\Toolkit\A;
 use Kirby\Toolkit\Dir;
 use Kirby\Toolkit\F;
+use Kirby\Http\Url;
 use Whoops\Exception\ErrorException;
 
 class StaticSiteGenerator
@@ -28,6 +29,7 @@ class StaticSiteGenerator
   protected $_ignoreUntranslatedPages = false;
 
   protected $_skipCopyingMedia = false;
+  protected $_skipCopyingPluginAssets = false;
 
   protected $_customRoutes = [];
 
@@ -98,15 +100,18 @@ class StaticSiteGenerator
       StaticSiteGeneratorMedia::clearList();
     }
 
+    !$this->_skipCopyingPluginAssets && $this->_copyPluginAssets();
+
     $this->_restoreOriginalBaseUrl();
     return $this->_fileList;
   }
 
-  protected function _registerShutdownFunction() {
-    register_shutdown_function(function() {
+  protected function _registerShutdownFunction()
+  {
+    register_shutdown_function(function () {
       if ($error = error_get_last()) {
         echo 'FATAL_ERROR:';
-        throw new ErrorException($error['message'], $error['type'] ?? 1, 1, $error['file'] ?? '', $error['line'] ?? 0);  
+        throw new ErrorException($error['message'], $error['type'] ?? 1, 1, $error['file'] ?? '', $error['line'] ?? 0);
       }
     });
   }
@@ -114,26 +119,36 @@ class StaticSiteGenerator
   public function skipMedia($skipCopyingMedia = true)
   {
     $this->_skipCopyingMedia = $skipCopyingMedia;
+    return $this;
+  }
+
+  public function skipPluginAssets($skipCopyingPluginAssets = true)
+  {
+    $this->_skipCopyingPluginAssets = $skipCopyingPluginAssets;
+    return $this;
   }
 
   public function setCustomRoutes(array $customRoutes)
   {
     $this->_customRoutes = $customRoutes;
+    return $this;
   }
 
   public function setIgnoreUntranslatedPages(bool $ignoreUntranslatedPages)
   {
     $this->_ignoreUntranslatedPages = $ignoreUntranslatedPages;
+    return $this;
   }
 
   public function setIndexFileName(string $indexFileName)
   {
     $indexFileName = preg_replace('/[^a-z0-9.]/i', '', $indexFileName);
     if (!preg_replace('/[.]/', '', $indexFileName)) {
-      return;
+      return $this;
     }
 
     $this->_indexFileName = $indexFileName;
+    return $this;
   }
 
   protected function _setOriginalBaseUrl()
@@ -233,7 +248,8 @@ class StaticSiteGenerator
     $this->_generatePage($page, $path, $baseUrl, $data, $routeContent);
   }
 
-  protected function _resetPage(Page|Site $page) {
+  protected function _resetPage(Page|Site $page)
+  {
     $page->content = null;
 
     foreach ($page->children() as $child) {
@@ -328,6 +344,23 @@ class StaticSiteGenerator
 
     $this->_fileList = array_unique($this->_fileList);
     return $this->_fileList;
+  }
+
+  protected function _copyPluginAssets()
+  {
+    $outputFolder = $this->_outputFolder;
+    $mediaPath = Url::path($this->_kirby->url('media'));
+    $pluginAssets = array_merge(...array_values(A::map(
+      $this->_kirby->plugins(),
+      fn($plugin) => $plugin->assets()->data
+    )));
+
+    foreach ($pluginAssets as $asset) {
+      $assetPath = $asset->path();
+      $pluginPath = $asset->plugin()->name();
+      $targetPath = "$outputFolder/$mediaPath/plugins/$pluginPath/$assetPath";
+      $this->_copyFile($asset->root(), $targetPath);
+    }
   }
 
   protected function _copyFile($file, $targetPath)
