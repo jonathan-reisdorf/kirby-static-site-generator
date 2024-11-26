@@ -109,8 +109,7 @@ class StaticSiteGenerator
   protected function _registerShutdownFunction()
   {
     register_shutdown_function(function () {
-      if ($error = error_get_last()) {
-        echo 'FATAL_ERROR:';
+      if (($error = error_get_last()) && $error['type'] === E_ERROR) {
         throw new ErrorException($error['message'], $error['type'] ?? 1, 1, $error['file'] ?? '', $error['line'] ?? 0);
       }
     });
