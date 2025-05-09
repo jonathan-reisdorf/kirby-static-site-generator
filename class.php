@@ -49,7 +49,8 @@ class StaticSiteGenerator
     $this->_languages = $this->_defaultLanguage ? $kirby->languages()->keys() : [$this->_defaultLanguage];
   }
 
-  public static function generateFromConfig(App $kirby) {
+  public static function generateFromConfig(App $kirby)
+  {
     $outputFolder = $kirby->option('jr.static_site_generator.output_folder', './static');
     $baseUrl = $kirby->option('jr.static_site_generator.base_url', '/');
     $preserve = $kirby->option('jr.static_site_generator.preserve', []);
@@ -60,20 +61,20 @@ class StaticSiteGenerator
     $ignoreUntranslatedPages = $kirby->option('jr.static_site_generator.ignore_untranslated_pages', false);
     $indexFileName = $kirby->option('jr.static_site_generator.index_file_name', 'index.html');
     if (!empty($skipTemplates)) {
-        array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
+      array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
     }
-  
+
     $pages = $kirby->site()->index();
     foreach ($customFilters as $filter) {
-        $pages = $pages->filterBy(...$filter);
+      $pages = $pages->filterBy(...$filter);
     }
-  
+
     $staticSiteGenerator = new self($kirby, null, $pages);
     $staticSiteGenerator->skipMedia($skipMedia);
     $staticSiteGenerator->setCustomRoutes($customRoutes);
     $staticSiteGenerator->setIgnoreUntranslatedPages($ignoreUntranslatedPages);
     $staticSiteGenerator->setIndexFileName($indexFileName);
-  
+
     return $staticSiteGenerator->generate($outputFolder, $baseUrl, $preserve);
   }
 

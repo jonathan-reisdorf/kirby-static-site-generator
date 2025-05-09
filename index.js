@@ -30,26 +30,26 @@ panel.plugin("jr/static-site-generator", {
       },
       template: `
         <div class="jr-static-site-generator">
-          <k-box class="jr-static-site-generator__container" v-if="!response && !isBusy" theme="regular">
+          <div class="k-item jr-static-site-generator__container" v-if="!response && !isBusy">
             <k-form @submit="execute()">
               <k-text theme="help" class="jr-static-site-generator__help">
               {{ help.replace(/<\\/?p>/g, '') }}
               </k-text>
-              <k-button type="submit" icon="upload" theme="negative" class="jr-static-site-generator__execute">
+              <k-button type="submit" icon="upload" variant="filled" theme="positive" class="jr-static-site-generator__execute">
                 {{ label }}
               </k-button>
             </k-form>
-          </k-box>
+          </div>
 
-          <k-box v-if="isBusy" class="jr-static-site-generator__status" theme="regular">
+          <div v-if="isBusy" class="k-item jr-static-site-generator__status">
             <k-text>{{ progress }}</k-text>
-          </k-box>
+          </div>
           <k-box v-if="response && response.success" class="jr-static-site-generator__status" theme="positive">
-            <k-text>{{ success }}</k-text>
+            <k-text class="block">{{ success }}</k-text>
             <k-text v-if="response.message" class="jr-static-site-generator__message" theme="help">{{ response.message }}</k-text>
           </k-box>
           <k-box v-if="response && !response.success" class="jr-static-site-generator__status" theme="negative">
-            <k-text>{{ error }}</k-text>
+            <k-text class="block">{{ error }}</k-text>
             <k-text v-if="response.message" class="jr-static-site-generator__message" theme="help">{{ response.message }}</k-text>
           </k-box>
         </div>
@@ -58,9 +58,10 @@ panel.plugin("jr/static-site-generator", {
         async execute() {
           const { endpoint } = this.$props;
           if (!endpoint) {
-            throw new Error(
-              'Error: Config option "static_site_generator.endpoint" is missing or null. Please set this to any string, e.g. "generate-static-site".'
-            );
+            const errorMsg =
+              'Error: Config option "jr.static_site_generator.endpoint" is missing or null. Please set this to any string, e.g. "generate-static-site".';
+            window.panel.notification.error(errorMsg);
+            throw new Error(errorMsg);
           }
 
           this.isBusy = true;

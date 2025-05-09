@@ -1,8 +1,8 @@
 {
   "name": "jreisdorf/kirby-static-site-generator",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "type": "kirby-plugin",
-  "description": "Static site generator plugin for Kirby 3 and 4",
+  "description": "Static site generator plugin for Kirby 3, 4 and 5",
   "license": "MIT",
   "authors": [
     {
