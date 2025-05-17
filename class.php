@@ -204,6 +204,12 @@ class StaticSiteGenerator
     $this->_kirby = $this->_kirby->clone(['urls' => $urls]);
   }
 
+  protected function _setRequestUrl(Page $page): Page
+  {
+    $this->_kirby = $this->_kirby->clone(['request' => ['url' => $page->url([])]]);
+    return $this->_kirby->page($page->id());
+  }
+
   protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
   {
     foreach ($this->_pages->keys() as $key) {
@@ -318,6 +324,8 @@ class StaticSiteGenerator
   protected function _generatePage(Page $page, string $path, string $baseUrl, array $data = [], string $content = null)
   {
     $page->setSite(null);
+    $page = $this->_setRequestUrl($page);
+
     $content = $content ?: $page->render($data);
 
     $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
@@ -326,6 +334,7 @@ class StaticSiteGenerator
     $content = str_replace($this->_originalBaseUrl, $baseUrl, $content);
     $content = str_replace($jsonOriginalBaseUrl . '\\/', $jsonBaseUrl, $content);
     $content = str_replace($jsonOriginalBaseUrl, $jsonBaseUrl, $content);
+    $content = str_replace('https&#x3A;&#x2F;&#x2F;jr-ssg-base-url&#x2F;', $baseUrl, $content);
 
     F::write($path, $content);
 
