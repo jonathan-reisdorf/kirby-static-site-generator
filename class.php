@@ -49,7 +49,8 @@ class StaticSiteGenerator
     $this->_languages = $this->_defaultLanguage ? $kirby->languages()->keys() : [$this->_defaultLanguage];
   }
 
-  public static function generateFromConfig(App $kirby) {
+  public static function generateFromConfig(App $kirby)
+  {
     $outputFolder = $kirby->option('jr.static_site_generator.output_folder', './static');
     $baseUrl = $kirby->option('jr.static_site_generator.base_url', '/');
     $preserve = $kirby->option('jr.static_site_generator.preserve', []);
@@ -60,20 +61,20 @@ class StaticSiteGenerator
     $ignoreUntranslatedPages = $kirby->option('jr.static_site_generator.ignore_untranslated_pages', false);
     $indexFileName = $kirby->option('jr.static_site_generator.index_file_name', 'index.html');
     if (!empty($skipTemplates)) {
-        array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
+      array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
     }
-  
+
     $pages = $kirby->site()->index();
     foreach ($customFilters as $filter) {
-        $pages = $pages->filterBy(...$filter);
+      $pages = $pages->filterBy(...$filter);
     }
-  
+
     $staticSiteGenerator = new self($kirby, null, $pages);
     $staticSiteGenerator->skipMedia($skipMedia);
     $staticSiteGenerator->setCustomRoutes($customRoutes);
     $staticSiteGenerator->setIgnoreUntranslatedPages($ignoreUntranslatedPages);
     $staticSiteGenerator->setIndexFileName($indexFileName);
-  
+
     return $staticSiteGenerator->generate($outputFolder, $baseUrl, $preserve);
   }
 
@@ -203,6 +204,12 @@ class StaticSiteGenerator
     $this->_kirby = $this->_kirby->clone(['urls' => $urls]);
   }
 
+  protected function _setRequestUrl(Page $page): Page
+  {
+    $this->_kirby = $this->_kirby->clone(['request' => ['url' => $page->url([])]]);
+    return $this->_kirby->page($page->id());
+  }
+
   protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
   {
     foreach ($this->_pages->keys() as $key) {
@@ -317,6 +324,8 @@ class StaticSiteGenerator
   protected function _generatePage(Page $page, string $path, string $baseUrl, array $data = [], string $content = null)
   {
     $page->setSite(null);
+    $page = $this->_setRequestUrl($page);
+
     $content = $content ?: $page->render($data);
 
     $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
@@ -325,6 +334,7 @@ class StaticSiteGenerator
     $content = str_replace($this->_originalBaseUrl, $baseUrl, $content);
     $content = str_replace($jsonOriginalBaseUrl . '\\/', $jsonBaseUrl, $content);
     $content = str_replace($jsonOriginalBaseUrl, $jsonBaseUrl, $content);
+    $content = str_replace('https&#x3A;&#x2F;&#x2F;jr-ssg-base-url&#x2F;', $baseUrl, $content);
 
     F::write($path, $content);
 

@@ -1,6 +1,6 @@
-# Kirby 3 / 4 - Static Site Generator
+# Kirby 3 / 4 / 5 - Static Site Generator
 
-![License](https://img.shields.io/github/license/mashape/apistatus.svg) ![Kirby 3](https://img.shields.io/badge/Kirby-3-black.svg) ![Kirby 4](https://img.shields.io/badge/Kirby-4-black.svg)
+![License](https://img.shields.io/github/license/mashape/apistatus.svg) ![Kirby 3](https://img.shields.io/badge/Kirby-3-black.svg) ![Kirby 4](https://img.shields.io/badge/Kirby-4-black.svg) ![Kirby 5](https://img.shields.io/badge/Kirby-5-black.svg)
 
 With this plugin you can create a directory with assets, media and static html files generated from your pages. You can simply upload the generated files to any CDN and everything (with small exceptions, see below) will still work. The result is an even faster site containing only static files (no PHP).
 
@@ -20,27 +20,27 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 
 ## What works
 
-- Compatibility with multilanguage sites
-- Translated URLs
-- Assets
-- Media (also when resized; files are automatically generated and copied when used)
-- Customizable base URL
-- Customizable paths to copy
-- Customizable output folder
-- Copying plugin assets
-- Preserve individual files / folders in the output folder
-- Custom routes (click [here](#custom-routes) for more information)
-- Custom pages filtering (click [here](#custom-filters) for more information)
+-   Compatibility with multilanguage sites
+-   Translated URLs
+-   Assets
+-   Media (also when resized; files are automatically generated and copied when used)
+-   Customizable base URL
+-   Customizable paths to copy
+-   Customizable output folder
+-   Copying plugin assets
+-   Preserve individual files / folders in the output folder
+-   Custom routes (click [here](#custom-routes) for more information)
+-   Custom pages filtering (click [here](#custom-filters) for more information)
 
 ## What doesn't work
 
-- Dynamic routes (unless when called by custom route - click [here](#custom-routes) for more information)
-- Query parameters (unless processed by javascript)
-- Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
-- Kirby paginations (only manual paginations via custom routes)
-- Directly opening the html files in the browser with the file protocol (absolute base url `/`)
-- Compatibility with other plugins that work with the `file::version` and `file::url` components
-- Compatibility with `esc` when used for internal URLs
+-   Dynamic routes (unless when called by custom route - click [here](#custom-routes) for more information)
+-   Query parameters (unless processed by javascript)
+-   Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
+-   Kirby paginations (only manual paginations via custom routes)
+-   Directly opening the html files in the browser with the file protocol (absolute base url `/`)
+-   Compatibility with other plugins that work with the `file::version` and `file::url` components
+-   Compatibility with `esc` when used for internal URLs
 
 ## How to use it
 
@@ -51,10 +51,10 @@ $staticSiteGenerator = new JR\StaticSiteGenerator($kirby, $pathsToCopy = null, $
 $fileList = $staticSiteGenerator->generate($outputFolder = './static', $baseUrl = '/', $preserve = []);
 ```
 
-- `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
-- `$pages`: if not given, all pages are rendered
-- use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
-- The `JR\StaticSiteGenerator` class offers a couple of public methods that allow to make further configuration changes.
+-   `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
+-   `$pages`: if not given, all pages are rendered
+-   use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
+-   The `JR\StaticSiteGenerator` class offers a couple of public methods that allow to make further configuration changes.
 
 ### 2) By triggering an endpoint
 
@@ -66,9 +66,15 @@ Do the same as for option 2) and then add a `staticSiteGenerator` type field to 
 
 ```yaml
 fields:
-  staticSiteGenerator:
-    label: Generate a static version of the site
-    # ... (see "Field options")
+    staticSiteGenerator:
+        label: Generate a static version of the site
+        # ... (see "Field options")
+```
+
+### 4) By using Kirby CLI
+
+```sh
+$ kirby ssg:generate
 ```
 
 ## Available configuration options
