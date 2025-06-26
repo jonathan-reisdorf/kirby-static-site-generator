@@ -9,9 +9,10 @@ use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
 use Kirby\Cms\Site;
 use Kirby\Toolkit\A;
-use Kirby\Toolkit\Dir;
-use Kirby\Toolkit\F;
+use Kirby\Filesystem\Dir;
+use Kirby\Filesystem\F;
 use Kirby\Http\Url;
+use Kirby\Toolkit\Str;
 use Whoops\Exception\ErrorException;
 
 class StaticSiteGenerator
@@ -35,9 +36,12 @@ class StaticSiteGenerator
 
   protected $_indexFileName = 'index.html';
 
-  public function __construct(App $kirby, array $pathsToCopy = null, Pages $pages = null)
+  protected $_isKirby5 = false;
+
+  public function __construct(App $kirby, ?array $pathsToCopy = null, ?Pages $pages = null)
   {
     $this->_kirby = $kirby;
+    $this->_isKirby5 = Str::startsWith($kirby->version(), '5.');
 
     $this->_pathsToCopy = $pathsToCopy ?: [$kirby->roots()->assets()];
     $this->_pathsToCopy = $this->_resolveRelativePaths($this->_pathsToCopy);
@@ -206,11 +210,13 @@ class StaticSiteGenerator
 
   protected function _setRequestUrl(Page $page): Page
   {
+    $language = $this->_kirby->currentLanguage();
     $this->_kirby = $this->_kirby->clone(['request' => ['url' => $page->url([])]]);
+    $this->_kirby->setCurrentLanguage($language?->code() ?? null);
     return $this->_kirby->page($page->id());
   }
 
-  protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
+  protected function _generatePagesByLanguage(string $baseUrl, ?string $languageCode = null)
   {
     foreach ($this->_pages->keys() as $key) {
       $page = $this->_pages->$key;
@@ -284,6 +290,10 @@ class StaticSiteGenerator
 
   protected function _resetPage(Page|Site $page)
   {
+    if ($this->_isKirby5) {
+      return;
+    }
+
     $page->content = null;
 
     foreach ($page->children() as $child) {
@@ -295,7 +305,7 @@ class StaticSiteGenerator
     }
   }
 
-  protected function _setPageLanguage(Page $page, string $languageCode = null, $forceReset = true)
+  protected function _setPageLanguage(Page $page, ?string $languageCode = null, $forceReset = true)
   {
     $this->_resetCollections();
 
@@ -316,12 +326,14 @@ class StaticSiteGenerator
 
   protected function _resetCollections()
   {
+    if ($this->_isKirby5) return;
+
     (function () {
       $this->collections = null;
     })->bindTo($this->_kirby, 'Kirby\\Cms\\App')($this->_kirby);
   }
 
-  protected function _generatePage(Page $page, string $path, string $baseUrl, array $data = [], string $content = null)
+  protected function _generatePage(Page $page, string $path, string $baseUrl, array $data = [], ?string $content = null)
   {
     $page->setSite(null);
     $page = $this->_setRequestUrl($page);
@@ -341,7 +353,7 @@ class StaticSiteGenerator
     $this->_fileList = array_unique(array_merge($this->_fileList, [$path]));
   }
 
-  public function copyFiles(string $folder = null)
+  public function copyFiles(?string $folder = null)
   {
     $outputFolder = $this->_outputFolder;
 
@@ -472,7 +484,7 @@ class StaticSiteGenerator
     );
   }
 
-  protected function _resolveRelativePath(string $path = null)
+  protected function _resolveRelativePath(?string $path = null)
   {
     if (!$path || strpos($path, '.') !== 0) {
       return realpath($path) ?: $path;
@@ -528,7 +540,7 @@ class StaticSiteGenerator
     );
   }
 
-  protected function _handleRenderError(Throwable $error, string $key, string $languageCode = null)
+  protected function _handleRenderError(Throwable $error, string $key, ?string $languageCode = null)
   {
     $message = $error->getMessage();
     $file = str_replace($this->_kirby->roots()->index(), '', $error->getFile());
