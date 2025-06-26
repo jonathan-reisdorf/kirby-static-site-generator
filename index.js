@@ -75,7 +75,7 @@ panel.plugin("jr/static-site-generator", {
           };
 
           try {
-            const response = await this.$api.post(`${endpoint}`);
+            const response = await (this.$api ?? panel.api).post(`${endpoint}`);
             this.response = response;
           } catch {
             errorResponse = (await errorResponse?.text())
