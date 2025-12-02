@@ -103,7 +103,7 @@ class StaticSiteGenerator
   {
     $this->_setOriginalBaseUrl();
 
-    $baseUrl = rtrim($baseUrl, '/') . '/';
+    $baseUrl = rtrim($baseUrl, '/');
 
     $copyMedia = !$this->_skipCopyingMedia;
     $copyMedia && StaticSiteGeneratorMedia::setActive(true);
@@ -342,10 +342,10 @@ class StaticSiteGenerator
 
     $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
     $jsonBaseUrl = trim(json_encode($baseUrl), '"');
-    $content = str_replace($this->_originalBaseUrl . '/', $baseUrl, $content);
-    $content = str_replace($this->_originalBaseUrl, $baseUrl, $content);
-    $content = str_replace($jsonOriginalBaseUrl . '\\/', $jsonBaseUrl, $content);
-    $content = str_replace($jsonOriginalBaseUrl, $jsonBaseUrl, $content);
+    $content = str_replace($this->_originalBaseUrl . '/', $baseUrl . '/', $content);
+    $content = str_replace($this->_originalBaseUrl, $baseUrl ?: '/', $content);
+    $content = str_replace($jsonOriginalBaseUrl . '\\/', $jsonBaseUrl . '\\/', $content);
+    $content = str_replace($jsonOriginalBaseUrl, $jsonBaseUrl ?: '\\/', $content);
     $content = str_replace('https&#x3A;&#x2F;&#x2F;jr-ssg-base-url&#x2F;', $baseUrl, $content);
 
     F::write($path, $content);
