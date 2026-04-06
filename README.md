@@ -20,27 +20,27 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 
 ## What works
 
--   Compatibility with multilanguage sites
--   Translated URLs
--   Assets
--   Media (also when resized; files are automatically generated and copied when used)
--   Customizable base URL
--   Customizable paths to copy
--   Customizable output folder
--   Copying plugin assets
--   Preserve individual files / folders in the output folder
--   Custom routes (click [here](#custom-routes) for more information)
--   Custom pages filtering (click [here](#custom-filters) for more information)
+- Compatibility with multilanguage sites
+- Translated URLs
+- Assets
+- Media (also when resized; files are automatically generated and copied when used)
+- Customizable base URL
+- Customizable paths to copy
+- Customizable output folder
+- Copying plugin assets
+- Preserve individual files / folders in the output folder
+- Custom routes (click [here](#custom-routes) for more information)
+- Custom pages filtering (click [here](#custom-filters) for more information)
+- Directly opening the html files in the browser with the file protocol (when using `file` as `base_url`)
 
 ## What doesn't work
 
--   Dynamic routes (unless when called by custom route - click [here](#custom-routes) for more information)
--   Query parameters (unless processed by javascript)
--   Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
--   Kirby paginations (only manual paginations via custom routes)
--   Directly opening the html files in the browser with the file protocol (absolute base url `/`)
--   Compatibility with other plugins that work with the `file::version` and `file::url` components
--   Compatibility with `esc` when used for internal URLs
+- Dynamic routes (unless when called by custom route - click [here](#custom-routes) for more information)
+- Query parameters (unless processed by javascript)
+- Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
+- Kirby paginations (only manual paginations via custom routes)
+- Compatibility with other plugins that work with the `file::version` and `file::url` components
+- Compatibility with `esc` when used for internal URLs
 
 ## How to use it
 
@@ -51,10 +51,10 @@ $staticSiteGenerator = new JR\StaticSiteGenerator($kirby, $pathsToCopy = null, $
 $fileList = $staticSiteGenerator->generate($outputFolder = './static', $baseUrl = '/', $preserve = []);
 ```
 
--   `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
--   `$pages`: if not given, all pages are rendered
--   use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
--   The `JR\StaticSiteGenerator` class offers a couple of public methods that allow to make further configuration changes.
+- `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
+- `$pages`: if not given, all pages are rendered
+- use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
+- The `JR\StaticSiteGenerator` class offers a couple of public methods that allow to make further configuration changes.
 
 ### 2) By triggering an endpoint
 
@@ -66,9 +66,9 @@ Do the same as for option 2) and then add a `staticSiteGenerator` type field to 
 
 ```yaml
 fields:
-    staticSiteGenerator:
-        label: Generate a static version of the site
-        # ... (see "Field options")
+  staticSiteGenerator:
+    label: Generate a static version of the site
+    # ... (see "Field options")
 ```
 
 ### 4) By using Kirby CLI
@@ -158,6 +158,11 @@ If `baseUrl` is not provided, the default base url is taken.
 To pass custom data to the controller or template, use `data`. [Click here](https://getkirby.com/docs/guide/templates/controllers#arguments-from-page-render-in-route) for more information how to use it.
 
 ⚠️ Have a look [here](https://getkirby.com/docs/reference/system/options/ready) in case you want to dynamically generate the custom routes based on a specific page or point to pages in the config. Kirby comes with a `ready` option for this purpose.
+
+## Directly opening the html files in the browser with the file protocol
+
+In the `jr.static_site_generator` configuration, set `'base_url' => 'file'` in order to generate html files which can be directly opened in the browser.
+(When using the class directly, set the `generate` `$baseUrl` argument to `'file'`.)
 
 ### There are two ways to define custom routes:
 

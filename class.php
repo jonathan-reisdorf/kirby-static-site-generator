@@ -340,9 +340,22 @@ class StaticSiteGenerator
 
     $content = $content ?: $page->render($data);
 
+    $isFileProtocol = $baseUrl === 'file';
+    if ($isFileProtocol) {
+      $matches = Str::matchAll($content, '|https://jr-ssg-base-url[a-zA-Z0-9/_.-]*.|')[0] ?? [];
+
+      foreach ($matches as $match) {
+        if (Str::contains(A::last(Str::split($match, '/')), '.')) continue;
+        $content = str_replace($match, substr($match, 0, -1) . '/index.html' . substr($match, -1), $content);
+      }
+
+      $pathSegments = Str::split(A::last(Str::split($page->url(), 'https://jr-ssg-base-url')), '/');
+      $baseUrl = (A::implode(A::map($pathSegments, fn() => '..'), '/') ?: '.') . '/';
+    }
+
     $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
     $jsonBaseUrl = trim(json_encode($baseUrl), '"');
-    $content = str_replace($this->_originalBaseUrl . '/', $baseUrl . '/', $content);
+    $content = str_replace($this->_originalBaseUrl . '/', ($isFileProtocol ? rtrim($baseUrl, '/') : $baseUrl) . '/', $content);
     $content = str_replace($this->_originalBaseUrl, $baseUrl ?: '/', $content);
     $content = str_replace($jsonOriginalBaseUrl . '\\/', $jsonBaseUrl . '\\/', $content);
     $content = str_replace($jsonOriginalBaseUrl, $jsonBaseUrl ?: '\\/', $content);
