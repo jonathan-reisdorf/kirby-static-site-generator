@@ -213,6 +213,7 @@ class StaticSiteGenerator
     $language = $this->_kirby->currentLanguage();
     $this->_kirby = $this->_kirby->clone(['request' => ['url' => $page->url([])]]);
     $this->_kirby->setCurrentLanguage($language?->code() ?? null);
+    $this->_kirby->setCurrentTranslation($language?->code() ?? null);
     return $this->_kirby->page($page->id()) ?: $page;
   }
 
